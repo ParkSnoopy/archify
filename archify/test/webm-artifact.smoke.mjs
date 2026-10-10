@@ -339,7 +339,6 @@ const chromeProcess = spawn(chrome, [
   '--headless=new',
   '--disable-gpu',
   '--disable-dev-shm-usage',
-  '--no-sandbox',
   '--allow-file-access-from-files',
   '--autoplay-policy=no-user-gesture-required',
   '--log-level=3',

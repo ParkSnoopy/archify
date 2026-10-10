@@ -16,12 +16,13 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: actions/checkout@v4 - Check Out Fork
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
           token: ${{ secrets.SYNC_TOKEN || github.token }}
-      - name: Pull upstream and retain approved paths
+      - name: bash - Merge Upstream and Retain Approved Paths
         env:
           TARGET_BRANCH: ${{ github.ref_name }}
           UPSTREAM_URL: https://github.com/tt-a1i/archify
@@ -32,10 +33,9 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          # Record upstream ancestry without importing its workflows or excluded files.
-          # Restore the retained content explicitly, including upstream deletions.
-          git pull --no-rebase --strategy=ours --no-commit --no-ff "$UPSTREAM_URL" "$UPSTREAM_BRANCH"
-          git restore --source=FETCH_HEAD --staged --worktree -- archify LICENSE
+          git fetch "$UPSTREAM_URL" "$UPSTREAM_BRANCH"
+          git merge --no-commit --no-ff FETCH_HEAD
+          git restore --source=HEAD --staged --worktree -- .github/workflows/sync-upstream.yml
           excluded=(
             .
             ':(top,exclude)archify'
